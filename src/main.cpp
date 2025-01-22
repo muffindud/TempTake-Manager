@@ -4,42 +4,49 @@
 #include <Wire.h>
 #include <SoftwareSerial.h>
 
-Adafruit_SSD1306 display(128, 64, &Wire, -1);
-SoftwareSerial HC12(HC_12_RX_PIN, HC_12_TX_PIN);
+#include "HC12.h"
+#include "DataPacker.h"
 
-String data = "";
-String oldData = "";
-int delaySeconds = 1;
+Adafruit_SSD1306 display(128, 64, &Wire, -1);
+HC12 hc12(HC_12_RX_PIN, HC_12_TX_PIN, HC_12_SET_PIN);
+
+DAT_T data_packet;
 
 void setup(){
-    Serial.begin(9600);
-    HC12.begin(HC_12_BAUD_RATE);
-
     display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
     display.display();
+
+    // Serial.begin(9600);
 
     delay(500);
 }
 
 void loop(){
-    // if(Serial.available()){
-    //     HC12.write(Serial.read());
-    // }
-    // if(HC12.available()){
-    //     Serial.write(HC12.read());
-    // }
+    data_packet = hc12.receiveData();
+    if(data_packet.type == DAT_MODE){
+        uint64_t temperature = data_packet.data.temperature;
+        Serial.write((uint8_t*)&temperature, sizeof(temperature));
 
-    if(HC12.available()){
-        data = HC12.readString();
-        Serial.println(data);
-        if(data != oldData){
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0, 0);
-            display.println(data);
-            display.display();
-            oldData = data;
-        }
+        uint64_t humidity = data_packet.data.humidity;
+        Serial.write((uint8_t*)&humidity, sizeof(humidity));
+
+        uint64_t pressure = data_packet.data.pressure;
+        Serial.write((uint8_t*)&pressure, sizeof(pressure));
+
+        uint64_t ppm = data_packet.data.ppm;
+        Serial.write((uint8_t*)&ppm, sizeof(ppm));
+
+        String data = "";
+        data += "T: " + String(temperature) + " C\n";
+        data += "H: " + String(humidity) + " %\n";
+        data += "P: " + String(pressure) + " mmHg\n";
+        data += "PPM: " + String(ppm) + " ppm\n";
+
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(SSD1306_WHITE);
+        display.setCursor(0, 0);
+        display.println(data);
+        display.display();
     }
 }
