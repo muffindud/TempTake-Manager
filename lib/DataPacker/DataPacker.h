@@ -14,6 +14,7 @@
 * @param index_packet: Index of the packet
 * @param total_packet_s: Total packets
 */
+#pragma pack(push, 1)
 struct META_T{
     uint16_t crc16;
     uint8_t manager_mac[6];
@@ -22,14 +23,17 @@ struct META_T{
     uint8_t index_packet;
     uint8_t total_packet_s;
 };
+#pragma pack(pop)
 const int META_SIZE = sizeof(META_T);
 
+#pragma pack(push, 1)
 struct RAW_DATA_T{
-    uint64_t temperature;
-    uint64_t humidity;
-    uint64_t pressure;
-    uint64_t ppm;
+    long int temperature;
+    long int humidity;
+    long int pressure;
+    long int ppm;
 };
+#pragma pack(pop)
 const int RAW_DATA_SIZE = sizeof(RAW_DATA_T);
 
 /*
@@ -39,12 +43,14 @@ const int RAW_DATA_SIZE = sizeof(RAW_DATA_T);
 * @param length: Length of the data
 * @param data: Data of the packet
 */
+#pragma pack(push, 1)
 struct DAT_T{
     uint8_t type;
     META_T meta;
     uint8_t length;
     RAW_DATA_T data;
 };
+#pragma pack(pop)
 const int DAT_SIZE = sizeof(DAT_T);
 
 /*
@@ -52,10 +58,12 @@ const int DAT_SIZE = sizeof(DAT_T);
 * @param type: Type of the packet
 * @param meta: Meta data of the packet
 */
+#pragma pack(push, 1)
 struct ACK_T{
     uint8_t type;
     META_T meta;
 };
+#pragma pack(pop)
 const int ACK_SIZE = sizeof(ACK_T);
 
 /*

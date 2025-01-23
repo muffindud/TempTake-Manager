@@ -16,31 +16,17 @@ void setup(){
     display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
     display.display();
 
-    // Serial.begin(9600);
-
     delay(500);
 }
 
 void loop(){
     data_packet = hc12.receiveData();
     if(data_packet.type == DAT_MODE){
-        uint64_t temperature = data_packet.data.temperature;
-        Serial.write((uint8_t*)&temperature, sizeof(temperature));
-
-        uint64_t humidity = data_packet.data.humidity;
-        Serial.write((uint8_t*)&humidity, sizeof(humidity));
-
-        uint64_t pressure = data_packet.data.pressure;
-        Serial.write((uint8_t*)&pressure, sizeof(pressure));
-
-        uint64_t ppm = data_packet.data.ppm;
-        Serial.write((uint8_t*)&ppm, sizeof(ppm));
-
         String data = "";
-        data += "T: " + String(temperature) + " C\n";
-        data += "H: " + String(humidity) + " %\n";
-        data += "P: " + String(pressure) + " mmHg\n";
-        data += "PPM: " + String(ppm) + " ppm\n";
+        data += "T: " + String(data_packet.data.temperature / 100. - 40.) + " C\n";
+        data += "H: " + String(data_packet.data.humidity / 100.) + " %\n";
+        data += "P: " + String(data_packet.data.pressure / 100.) + " mmHg\n";
+        data += "PPM: " + String(data_packet.data.ppm / 100.) + " ppm\n";
 
         display.clearDisplay();
         display.setTextSize(1);
@@ -48,5 +34,7 @@ void loop(){
         display.setCursor(0, 0);
         display.println(data);
         display.display();
+
+        // Will upload the data using MQTT
     }
 }
