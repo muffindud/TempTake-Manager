@@ -1,6 +1,10 @@
 #include "WorkerPair.h"
 
 void pairWorker(MAC_ADDRESS_T manager_mac){
+    MAC_ADDRESS_T worker_mac;
+
+    Wire.begin();
+
     Wire.beginTransmission(PAIR_ADDR);
     Wire.write(manager_mac.mac, 6);
     Wire.endTransmission();
@@ -9,10 +13,10 @@ void pairWorker(MAC_ADDRESS_T manager_mac){
 
     Wire.requestFrom(PAIR_ADDR, 6);
     while(Wire.available()){
-        Wire.readBytes(manager_mac.mac, 6);
+        Wire.readBytes(worker_mac.mac, 6);
     }
 
-    addWorkerMac(manager_mac);
+    addWorkerMac(worker_mac);
 
     return;
 }

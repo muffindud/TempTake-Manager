@@ -2,13 +2,13 @@
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
 #include <SoftwareSerial.h>
-#include <esp_wifi.h>
+#include <WiFi.h>
 
 #include "HC12.h"
 #include "DataPacker.h"
 #include "WorkerPair.h"
 
-#include "config.h"
+#include <config.h>
 
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 HC12 hc12(HC_12_RX_PIN, HC_12_TX_PIN, HC_12_SET_PIN);
@@ -17,20 +17,17 @@ DAT_T data_packet;
 MAC_ADDRESS_T manager_mac;
 
 void setup(){
-    Wire.begin();
+    Serial.begin(9600);
 
     display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
     display.display();
 
-    esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, manager_mac.mac);
+    WiFi.macAddress(manager_mac.mac);
 
-    Serial.begin(9600);
-
-    Serial.print("MAC address: ");
-    for(int i = 0; i < 6; i++){
-        Serial.print(manager_mac.mac[i], HEX);
-        Serial.print(":");
-    }
+    Serial.printf("MAC: %2x:%2x:%2x:%2x:%2x:%2x\n",
+        manager_mac.mac[0], manager_mac.mac[1], manager_mac.mac[2],
+        manager_mac.mac[3], manager_mac.mac[4], manager_mac.mac[5]
+    );
 
     pinMode(PAIR_BUTTON_PIN, INPUT_PULLUP);
     delay(500);

@@ -13,7 +13,7 @@ struct MAC_ADDRESS_T{
 
 /*
 * @brief Exchange the MAC address with the worker module over the I2C bus
-* @param worker_mac The MAC address of the worker module
+* @param manager_mac: The MAC address of the manager module
 */
 void pairWorker(MAC_ADDRESS_T manager_mac);
 
