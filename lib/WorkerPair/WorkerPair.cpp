@@ -12,24 +12,20 @@ void pairWorker(MAC_ADDRESS_T manager_mac){
     delay(100);
 
     Wire.requestFrom(PAIR_ADDR, 6);
-    while(Wire.available()){
-        Wire.readBytes(worker_mac.mac, 6);
+    if(Wire.available() == 6){
+        for(int i = 0; i < 6; i++){
+            worker_mac.mac[i] = Wire.read();
+        }
     }
 
     addWorkerMac(worker_mac);
-
-    return;
 }
 
 void addWorkerMac(MAC_ADDRESS_T worker_mac){
     // Will upload the MAC address to the database using MQTT
 
-    Serial.print("Added worker MAC: ");
-    for(int i = 0; i < 6; i++){
-        Serial.print(worker_mac.mac[i], HEX);
-        Serial.print(":");
-    }
-    Serial.println();
-
-    return;
+    Serial.printf("Added worker MAC: %2x:%2x:%2x:%2x:%2x:%2x\n\r",
+        worker_mac.mac[0], worker_mac.mac[1], worker_mac.mac[2],
+        worker_mac.mac[3], worker_mac.mac[4], worker_mac.mac[5]
+    );
 }
