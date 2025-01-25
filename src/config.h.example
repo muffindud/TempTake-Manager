@@ -1,6 +1,8 @@
 #define HC_12_RX_PIN 16
 #define HC_12_TX_PIN 17
 #define HC_12_SET_PIN 18
-#define HC_12_BAUD_RATE 9600
+
+#define PAIR_BUTTON_PIN 19
 
 #define OLED_ADDR 0x3C
+#define PAIR_ADDR 0x55
