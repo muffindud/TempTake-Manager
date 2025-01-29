@@ -2,7 +2,9 @@
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
 #include <SoftwareSerial.h>
+
 #include <WiFi.h>
+#include <PubSubClient.h>
 
 #include "HC12.h"
 #include "DataPacker.h"
@@ -16,8 +18,46 @@ HC12 hc12(HC_12_RX_PIN, HC_12_TX_PIN, HC_12_SET_PIN);
 DAT_T data_packet;
 MAC_ADDRESS_T manager_mac;
 
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+
+void reconnect(){
+    while(!client.connected()){
+        Serial.print("Attempting MQTT connection...");
+        if(client.connect("ESP32Client")){
+            Serial.println("connected");
+        }else{
+            Serial.print("failed, rc=");
+            Serial.print(client.state());
+            Serial.println(" try again in 5 seconds");
+            delay(5000);
+        }
+    }
+}
+bool uploadData(){
+    if(!client.connected()){
+        client.connect("ESP32Client");
+    }
+
+    client.publish("temptake/manager", (const uint8_t*)&data_packet, (unsigned int)sizeof(data_packet));
+    return true;
+}
+
 void setup(){
     Serial.begin(9600);
+
+    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    Serial.print("Connecting to " + String(WIFI_SSID));
+    while(WiFi.status() != WL_CONNECTED){
+        delay(100);
+        Serial.print(".");
+    }
+    Serial.println();
+    Serial.println("Connected to WiFi");
+    Serial.println("IP: " + WiFi.localIP().toString());
+
+    client.setServer(MQTT_SERVER, MQTT_PORT);
 
     display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
     display.display();
@@ -53,6 +93,8 @@ void loop(){
         display.println(data);
         display.display();
 
-        // Will upload the data using MQTT
+        bool result = uploadData();
+
+        // TODO: Check for success
     }
 }
