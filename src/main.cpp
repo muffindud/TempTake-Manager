@@ -3,16 +3,15 @@
 #include <Wire.h>
 #include <SoftwareSerial.h>
 
-#include <WiFi.h>
-#include <PubSubClient.h>
+// #include <WiFi.h>
+// #include <PubSubClient.h>
 
 #include "HC12.h"
 #include "DataPacker.h"
 #include "WorkerPair.h"
+#include "WiFiManager.h"
 
 #include <config.h>
-
-#define DEBUG
 
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 HC12 hc12(HC_12_RX_PIN, HC_12_TX_PIN, HC_12_SET_PIN);
@@ -21,9 +20,6 @@ DAT_T data_packet;
 RAW_DATA_T data;
 
 MAC_ADDRESS_T manager_mac;
-
-WiFiClient espClient;
-PubSubClient client(espClient);
 
 
 void reconnect(){
@@ -47,6 +43,7 @@ void reconnect(){
         }
     }
 }
+
 bool uploadData(){
     if(!client.connected()){
         client.connect("ESP32Client");
@@ -61,38 +58,14 @@ void setup(){
     Serial.begin(9600);
     #endif
 
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
-
-    #ifdef DEBUG
-    Serial.print("Connecting to " + String(WIFI_SSID));
-    #endif
-
-    while(WiFi.status() != WL_CONNECTED){
-        delay(100);
-
-        #ifdef DEBUG
-        Serial.print(".");
-        #endif
+    while(!initWiFi(MQTT_SERVER, MQTT_PORT)){
+        delay(1000);
     }
 
-    #ifdef DEBUG
-    Serial.println();
-    Serial.println("Connected to WiFi");
-    Serial.println("IP: " + WiFi.localIP().toString());
-    #endif
-
-    client.setServer(MQTT_SERVER, MQTT_PORT);
     WiFi.macAddress(manager_mac.mac);
 
     display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
     display.display();
-
-    #ifdef DEBUG
-    Serial.printf("MAC: %2x:%2x:%2x:%2x:%2x:%2x\n",
-        manager_mac.mac[0], manager_mac.mac[1], manager_mac.mac[2],
-        manager_mac.mac[3], manager_mac.mac[4], manager_mac.mac[5]
-    );
-    #endif
 
     pinMode(PAIR_BUTTON_PIN, INPUT_PULLUP);
     delay(500);
@@ -121,10 +94,7 @@ void loop(){
         display.display();
 
         #ifdef DEBUG
-        for(int i = 0; i < sizeof(data_packet); i++){
-            Serial.printf("%2x ", ((uint8_t*)&data_packet)[i]);
-        }
-        Serial.println();
+        Serial.println(data_string);
         #endif
 
         bool result = uploadData();

@@ -10,5 +10,4 @@
 #define MQTT_SERVER "192.168.0.1"
 #define MQTT_PORT 1883
 
-#define WIFI_SSID "SSID"
-#define WIFI_PASS "PASSWORD"
+#define EEPROM_SIZE 64
