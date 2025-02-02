@@ -9,5 +9,3 @@
 
 #define MQTT_SERVER "192.168.0.1"
 #define MQTT_PORT 1883
-
-#define EEPROM_SIZE 64

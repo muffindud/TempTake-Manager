@@ -6,7 +6,7 @@
 #include <BluetoothSerial.h>
 #include <Preferences.h>
 
-#include "config.h"
+#include <config.h>
 
 extern WiFiClient espClient;
 extern PubSubClient client;

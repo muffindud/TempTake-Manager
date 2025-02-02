@@ -68,6 +68,11 @@ bool initWiFi(String mqtt_server, uint16_t mqtt_port){
 
 bool loadWiFiCredentials(){
     ssid = preferences.getString("ssid", "");
+
+    if(ssid == ""){
+        return false;
+    }
+
     pass = preferences.getString("pass", "");
 
     #ifdef DEBUG
@@ -95,17 +100,26 @@ void listenForCredentials(){
 
     while(true){
         if(SerialBT.available()){
-            SerialBT.print("SSID: ");
-            ssid = SerialBT.readStringUntil('\n');
-            SerialBT.print("PASS: ");
-            pass = SerialBT.readStringUntil('\n');
+            String data = SerialBT.readStringUntil('\n');
+            data.trim();
 
-            #ifdef DEBUG
+            int separator = data.indexOf(':');
+
+            if(separator != -1){
+                ssid = data.substring(0, separator);
+                pass = data.substring(separator + 1);
+            }else{
+                ssid = data;
+                pass = "";
+            }
+
+            // #ifdef DEBUG
             Serial.println("Received WiFi credentials");
             Serial.println("SSID: " + ssid);
             Serial.println("PASS: " + pass);
-            #endif
+            // #endif
 
+            SerialBT.end();
             break;
         }
     }
