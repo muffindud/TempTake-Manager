@@ -28,10 +28,10 @@ const int META_SIZE = sizeof(META_T);
 
 #pragma pack(push, 1)
 struct RAW_DATA_T{
-    long int temperature;
-    long int humidity;
-    long int pressure;
-    long int ppm;
+    uint64_t temperature;
+    uint64_t humidity;
+    uint64_t pressure;
+    uint64_t ppm;
 };
 #pragma pack(pop)
 const int RAW_DATA_SIZE = sizeof(RAW_DATA_T);
@@ -48,7 +48,7 @@ struct DAT_T{
     uint8_t type;
     META_T meta;
     uint8_t length;
-    RAW_DATA_T data;
+    uint8_t data[32];
 };
 #pragma pack(pop)
 const int DAT_SIZE = sizeof(DAT_T);
