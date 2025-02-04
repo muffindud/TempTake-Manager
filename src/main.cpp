@@ -1,8 +1,5 @@
 #include <Arduino.h>
-#include <Adafruit_SSD1306.h>
-#include <Wire.h>
 #include <SoftwareSerial.h>
-
 #include <WiFi.h>
 #include <PubSubClient.h>
 
@@ -12,16 +9,21 @@
 
 #include <config.h>
 
-#define DEBUG
+#ifdef DISPLAY_ON
+#include <Adafruit_SSD1306.h>
+#include <Wire.h>
+#endif
 
+
+#ifdef DISPLAY_ON
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
-HC12 hc12(HC_12_RX_PIN, HC_12_TX_PIN, HC_12_SET_PIN);
+#endif
 
 DAT_T data_packet;
 RAW_DATA_T data;
-
 MAC_ADDRESS_T manager_mac;
 
+HC12 hc12(HC_12_RX_PIN, HC_12_TX_PIN, HC_12_SET_PIN);
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -84,14 +86,16 @@ void setup(){
     client.setServer(MQTT_SERVER, MQTT_PORT);
     WiFi.macAddress(manager_mac.mac);
 
-    display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
-    display.display();
-
     #ifdef DEBUG
     Serial.printf("MAC: %2x:%2x:%2x:%2x:%2x:%2x\n",
         manager_mac.mac[0], manager_mac.mac[1], manager_mac.mac[2],
         manager_mac.mac[3], manager_mac.mac[4], manager_mac.mac[5]
     );
+    #endif
+
+    #ifdef DISPLAY_ON
+    display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
+    display.display();
     #endif
 
     pinMode(PAIR_BUTTON_PIN, INPUT_PULLUP);
@@ -107,6 +111,7 @@ void loop(){
     if(data_packet.type == DAT_MODE){
         memcpy(&data, data_packet.data, sizeof(data));
 
+        #ifdef DISPLAY_ON
         String data_string = "";
         data_string += "T: " + String(data.temperature / 100. - 40.) + " C\n";
         data_string += "H: " + String(data.humidity / 100.) + " %\n";
@@ -119,6 +124,7 @@ void loop(){
         display.setCursor(0, 0);
         display.println(data_string);
         display.display();
+        #endif
 
         #ifdef DEBUG
         for(int i = 0; i < sizeof(data_packet); i++){
