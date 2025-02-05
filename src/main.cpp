@@ -56,14 +56,39 @@ bool uploadData(){
     return true;
 }
 
+void connectWiFi(){
+    int attempts = 0;
+
+    #ifdef DEBUG
+    Serial.println("Connecting to WiFi");
+    #endif
+
+    while(attempts < 3){
+        attempts++;
+
+        if(initWiFi(MQTT_SERVER, MQTT_PORT)){
+            #ifdef DEBUG
+            Serial.println("Connected to WiFi");
+            Serial.println("IP: " + WiFi.localIP().toString());
+            #endif
+
+            return;
+        }
+
+        #ifdef DEBUG
+        Serial.printf("Failed to connect to WiFi, attempt %d\n", attempts);
+        #endif
+
+        delay(1000);
+    }
+}
+
 void setup(){
     #ifdef DEBUG
     Serial.begin(9600);
     #endif
 
-    while(!initWiFi(MQTT_SERVER, MQTT_PORT)){
-        delay(1000);
-    }
+    connectWiFi();
 
     WiFi.macAddress(manager_mac.mac);
 
@@ -105,10 +130,10 @@ void loop(){
         display.setCursor(0, 0);
         display.println(data_string);
         display.display();
-        #endif
 
         #ifdef DEBUG
         Serial.println(data_string);
+        #endif
         #endif
 
         bool result = uploadData();
