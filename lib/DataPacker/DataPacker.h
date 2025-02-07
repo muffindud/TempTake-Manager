@@ -19,7 +19,7 @@ struct META_T{
     uint16_t crc16;
     uint8_t manager_mac[6];
     uint8_t worker_mac[6];
-    uint16_t id;
+    uint32_t id;
     uint8_t index_packet;
     uint8_t total_packet_s;
 };
@@ -83,6 +83,6 @@ uint16_t crc16(uint8_t* data_p, uint8_t length);
 * @param crc16: u16_t crc16
 * @return u16_t id
 */
-uint16_t getId(uint8_t* source_mac, uint8_t* dest_mac, uint8_t* data, uint8_t length, uint16_t crc16);
+uint32_t getId(uint8_t* source_mac, uint8_t* dest_mac, uint8_t* data, uint8_t length, uint16_t crc16);
 
 #endif
