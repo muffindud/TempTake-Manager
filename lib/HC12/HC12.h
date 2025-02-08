@@ -42,9 +42,12 @@ class HC12{
 
         /*
         * @brief Send ACK packet to the worker
-        * @param manager_mac: MAC address of the manager
+        * @param crc16: CRC16 checksum of the data
+        * @param manager_mac*: pointer to MAC address of the manager
+        * @param worker_mac*: pointer to MAC address of the worker
         * @param id: ID of the packet
         * @param index_packet: Index of the packet
+        * @param total_packet_s: Total packets
         */
         void sendAck(
             uint16_t crc16,
