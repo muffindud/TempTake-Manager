@@ -136,6 +136,16 @@ void loop(){
         #endif
         #endif
 
+        // TODO: Compute the id
+        hc12.sendAck(
+            crc16((uint8_t*)&data, sizeof(data)),
+            manager_mac.mac,
+            data_packet.meta.worker_mac,
+            data_packet.meta.id,
+            data_packet.meta.index_packet,
+            data_packet.meta.total_packet_s
+        );
+
         bool result = uploadData();
 
         // TODO: Check for success
