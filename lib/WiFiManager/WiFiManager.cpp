@@ -6,7 +6,7 @@ Preferences preferences;
 String ssid;
 String pass;
 
-bool initWiFi(String mqtt_server, uint16_t mqtt_port){
+bool initWiFi(char* mqtt_server, uint16_t mqtt_port){
     preferences.begin("wifi", false);
 
     bool credentialsPresent = loadWiFiCredentials();
@@ -57,7 +57,7 @@ bool initWiFi(String mqtt_server, uint16_t mqtt_port){
     Serial.println("IP: " + WiFi.localIP().toString());
     #endif
 
-    client.setServer(mqtt_server.c_str(), mqtt_port);
+    client.setServer(mqtt_server, mqtt_port);
 
     #ifdef DEBUG
     uint8_t mac[6];

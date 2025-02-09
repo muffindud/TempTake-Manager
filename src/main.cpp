@@ -24,6 +24,8 @@ MAC_ADDRESS_T manager_mac;
 
 HC12 hc12(HC_12_RX_PIN, HC_12_TX_PIN, HC_12_SET_PIN);
 
+char* mqtt_server = MQTT_SERVER;
+int mqtt_port = MQTT_PORT;
 
 void reconnect(){
     while(!client.connected()){
@@ -66,7 +68,7 @@ void connectWiFi(){
     while(attempts < 3){
         attempts++;
 
-        if(initWiFi(MQTT_SERVER, MQTT_PORT)){
+        if(initWiFi(mqtt_server, mqtt_port)){
             #ifdef DEBUG
             Serial.println("Connected to WiFi");
             Serial.println("IP: " + WiFi.localIP().toString());
@@ -137,14 +139,14 @@ void loop(){
         #endif
 
         // TODO: Compute the id
-        hc12.sendAck(
-            crc16((uint8_t*)&data, sizeof(data)),
-            manager_mac.mac,
-            data_packet.meta.worker_mac,
-            data_packet.meta.id,
-            data_packet.meta.index_packet,
-            data_packet.meta.total_packet_s
-        );
+        // hc12.sendAck(
+        //     crc16((uint8_t*)&data, sizeof(data)),
+        //     manager_mac.mac,
+        //     data_packet.meta.worker_mac,
+        //     data_packet.meta.id,
+        //     data_packet.meta.index_packet,
+        //     data_packet.meta.total_packet_s
+        // );
 
         bool result = uploadData();
 

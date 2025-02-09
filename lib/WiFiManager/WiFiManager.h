@@ -15,7 +15,7 @@ extern Preferences preferences;
 extern String ssid;
 extern String pass;
 
-bool initWiFi(String mqtt_server, uint16_t mqtt_port);
+bool initWiFi(char* mqtt_server, uint16_t mqtt_port);
 
 bool loadWiFiCredentials();
 
