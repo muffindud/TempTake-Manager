@@ -49,13 +49,20 @@ void reconnect(){
     }
 }
 
-bool uploadData(){
+void uploadData(){
     if(!client.connected()){
         client.connect("ESP32Client");
     }
 
-    client.publish("temptake/manager", (const uint8_t*)&data_packet, (unsigned int)sizeof(data_packet));
-    return true;
+    client.publish("temptake/entry", (const uint8_t*)&data_packet, (unsigned int)sizeof(data_packet));
+}
+
+void registerManager(){
+    if(!client.connected()){
+        client.connect("ESP32Client");
+    }
+
+    client.publish("temptake/manager/register", (const uint8_t*)&manager_mac, (unsigned int)sizeof(manager_mac));
 }
 
 void connectWiFi(){
@@ -73,6 +80,9 @@ void connectWiFi(){
             Serial.println("Connected to WiFi");
             Serial.println("IP: " + WiFi.localIP().toString());
             #endif
+
+            WiFi.macAddress(manager_mac.mac);
+            registerManager();
 
             return;
         }
@@ -92,8 +102,6 @@ void setup(){
 
     connectWiFi();
 
-    WiFi.macAddress(manager_mac.mac);
-
     #ifdef DEBUG
     Serial.printf("MAC: %2x:%2x:%2x:%2x:%2x:%2x\n",
         manager_mac.mac[0], manager_mac.mac[1], manager_mac.mac[2],
@@ -112,7 +120,7 @@ void setup(){
 
 void loop(){
     if(digitalRead(PAIR_BUTTON_PIN) == LOW){
-        pairWorker(manager_mac);
+        pairWorker(manager_mac, client);
     }
 
     data_packet = hc12.receiveData();
@@ -148,7 +156,7 @@ void loop(){
         //     data_packet.meta.total_packet_s
         // );
 
-        bool result = uploadData();
+        uploadData();
 
         // TODO: Check for success
     }
