@@ -7,11 +7,8 @@
 #define OLED_ADDR 0x3C
 #define PAIR_ADDR 0x55
 
-#define MQTT_SERVER "192.168.0.1"
+#define MQTT_SERVER "temptake-mqtt.duckdns.org"
 #define MQTT_PORT 1883
 
-#define WIFI_SSID "SSID"
-#define WIFI_PASS "PASSWORD"
-
-// #define DEBUG
-// #define DISPLAY
+#define DEBUG
+#define DISPLAY_ON

@@ -1,5 +1,7 @@
 #include "WiFiManager.h"
 
+#define DEBUG
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 Preferences preferences;
