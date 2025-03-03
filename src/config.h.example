@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #define HC_12_RX_PIN 16
 #define HC_12_TX_PIN 17
@@ -16,3 +17,5 @@
 #define DISPLAY_ON
 #define MANAGER
 // #define WORKER
+
+#endif
