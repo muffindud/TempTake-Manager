@@ -3,6 +3,8 @@
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 Preferences preferences;
+String deviceName;
+String managerMac;
 
 bool initWiFi(){
     // Start preferences with read/write access
@@ -39,6 +41,13 @@ bool initWiFi(){
         // Save credentials to preferences
         saveWiFiCredentials(credentials);
 
+        mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
+        registerManager();
+
+        #ifdef DEBUG
+        Serial.println("MQTT server set: " + String(MQTT_SERVER) + ":" + String(MQTT_PORT));
+        #endif
+
         return true;
     }
 
@@ -56,7 +65,7 @@ WIFI_CREDENTIALS_T listenForCredentials(){
     BluetoothSerial bluetoothSerial;
     WIFI_CREDENTIALS_T credentials;
 
-    String deviceName = "TempTake Manager " + String(ESP.getEfuseMac(), HEX);
+    deviceName = "TempTake Manager " + String(ESP.getEfuseMac(), HEX);
 
     #ifdef DEBUG
     Serial.print("Listening as " + deviceName);
@@ -128,7 +137,14 @@ bool connectToWiFi(WIFI_CREDENTIALS_T credentials){
     if(WiFi.status() == WL_CONNECTED){
         #ifdef DEBUG
         Serial.println("Connected to WiFi");
+        Serial.println("Local IP: " + WiFi.localIP());
+        Serial.println("MAC: " + WiFi.macAddress());
         #endif
+
+        uint8_t mac[6];
+        WiFi.macAddress(mac);
+        managerMac = String(mac[0], HEX) + String(mac[1], HEX) + String(mac[2], HEX) + String(mac[3], HEX) + String(mac[4], HEX) + String(mac[5], HEX);
+        managerMac.toUpperCase();
 
         return true;
     }
@@ -148,4 +164,72 @@ void saveWiFiCredentials(WIFI_CREDENTIALS_T credentials){
 void deleteWiFiCredentials(){
     preferences.remove("ssid");
     preferences.remove("password");
+}
+
+void reconnect(){
+    for(
+        uint8_t attempts = 0;
+        attempts < 3 && !mqttClient.connected();
+        attempts++
+    ){
+        #ifdef DEBUG
+        Serial.println("Attempting MQTT connection...");
+        #endif
+
+        if(mqttClient.connect(deviceName.c_str())){
+            #ifdef DEBUG
+            Serial.println("Connected to MQTT server");
+            #endif
+        }else{
+            #ifdef DEBUG
+            Serial.print("Failed to connect to MQTT server, rc=");
+            Serial.print(mqttClient.state());
+            Serial.println("Retrying in 3 seconds...");
+            #endif
+
+            delay(3000);
+        }
+    }
+
+    if(!mqttClient.connected()){
+        #ifdef DEBUG
+        Serial.println("Failed to connect to MQTT server");
+        #endif
+    }
+}
+
+void registerManager(){
+    reconnect();
+
+    if(mqttClient.connected()){
+        mqttClient.publish("temptake/manager/register", (const uint8_t*)&managerMac, 12);
+    }
+}
+
+void registerWorker(String workerMac){
+    reconnect();
+
+    if(mqttClient.connected()){
+        workerMac.toUpperCase();
+        String concatinatedMac = managerMac + workerMac;
+
+        mqttClient.publish("temptake/worker/register", (const uint8_t*)concatinatedMac.c_str(), 24);
+
+        #ifdef DEBUG
+        Serial.println("Registered worker: " + workerMac);
+        #endif
+    }
+}
+
+void uploadData(uint8_t* data){
+    reconnect();
+
+    if(mqttClient.connected()){
+        mqttClient.publish("temptake/entry", data, sizeof(data));
+
+        #ifdef DEBUG
+        Serial.println("Uploaded data");
+        Serial.print(String(data, HEX));
+        #endif
+    }
 }

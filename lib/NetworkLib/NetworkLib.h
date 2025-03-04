@@ -18,5 +18,7 @@ extern PubSubClient mqttClient;
 extern Preferences preferences;
 
 bool initWiFi();
+void uploadData(uint8_t* data);
+void registerWorker(String workerMac);
 
 #endif
