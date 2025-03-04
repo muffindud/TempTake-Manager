@@ -41,7 +41,10 @@ bool initWiFi(){
         // Save credentials to preferences
         saveWiFiCredentials(credentials);
 
+        // Set MQTT server and port
         mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
+
+        // Register manager with MQTT server
         registerManager();
 
         #ifdef DEBUG
