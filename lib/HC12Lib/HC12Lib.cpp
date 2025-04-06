@@ -19,6 +19,19 @@ void HC12::setCommandMode(bool mode){
     delay(100);
 }
 
+PACKET_T HC12::receiveData(){
+    if(this->serial->available()){
+        uint8_t* dataStream = (uint8_t*)malloc(PACKET_SIZE);
+        this->serial->readBytes(dataStream, PACKET_SIZE);
+        PACKET_T packet;
+        memcpy(&packet, dataStream, PACKET_SIZE);
+        free(dataStream);
+        return packet;
+    }
+
+    return PACKET_T();
+}
+
 void HC12::sendCommand(String command){
     if(this->commandMode){
         this->serial->println(command);

@@ -4,10 +4,12 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
+#include "DataPackerLib.h"
+
 class HC12{
     public:
         HC12(uint8_t rx, uint8_t tx, uint8_t setPin);
-        
+
         /**
          * Set the HC-12 module to sleep mode
          *
@@ -21,6 +23,13 @@ class HC12{
          * @param channel The channel of the module [1..127]
          */
         void setChannel(uint8_t channel);
+
+        /**
+         * Receive the data from the HC-12 module
+         *
+         * @returns the received data
+         */
+        PACKET_T receiveData();
 
     private:
         SoftwareSerial *serial;
