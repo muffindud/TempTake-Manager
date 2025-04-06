@@ -1,6 +1,3 @@
-#ifndef CONFIG_H
-#define CONFIG_H
-
 #define HC_12_RX_PIN 16
 #define HC_12_TX_PIN 17
 #define HC_12_SET_PIN 18
@@ -10,12 +7,10 @@
 #define OLED_ADDR 0x3C
 #define PAIR_ADDR 0x55
 
-const char* MQTT_SERVER = "temptake-mqtt.duckdns.org";
+#define MQTT_SERVER "temptake-mqtt.duckdns.org"
 #define MQTT_PORT 1883
 
 #define DEBUG
 #define DISPLAY_ON
 #define MANAGER
 // #define WORKER
-
-#endif

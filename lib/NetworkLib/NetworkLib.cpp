@@ -6,6 +6,14 @@ Preferences preferences;
 String deviceName;
 String managerMac;
 
+WIFI_CREDENTIALS_T getWiFiCredentials();
+void registerManager();
+void reconnect();
+void deleteWiFiCredentials();
+void saveWiFiCredentials(WIFI_CREDENTIALS_T credentials);
+bool connectToWiFi(WIFI_CREDENTIALS_T credentials);
+WIFI_CREDENTIALS_T listenForCredentials();
+
 bool initWiFi(){
     // Start preferences with read/write access
     preferences.begin("ssid", false);
@@ -62,6 +70,8 @@ WIFI_CREDENTIALS_T getWiFiCredentials(){
 
     preferences.getBytes("ssid", credentials.ssid, 32);
     preferences.getBytes("password", credentials.password, 32);
+
+    return credentials;
 }
 
 WIFI_CREDENTIALS_T listenForCredentials(){
