@@ -21,11 +21,10 @@ void HC12::setCommandMode(bool mode){
 
 PACKET_T HC12::receiveData(){
     if(this->serial->available()){
-        uint8_t* dataStream = (uint8_t*)malloc(PACKET_SIZE);
+        uint8_t dataStream[PACKET_SIZE];
         this->serial->readBytes(dataStream, PACKET_SIZE);
         PACKET_T packet;
         memcpy(&packet, dataStream, PACKET_SIZE);
-        free(dataStream);
         return packet;
     }
 

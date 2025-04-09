@@ -13,7 +13,7 @@ bool isPairingMode(){
 }
 
 String uintToString(uint8_t* mac){
-    char macAddressString[12];
+    static char macAddressString[12];
     for (int i = 0; i < 6; i++) {
         macAddressString[i * 2]     = hexChars[(mac[i] >> 4) & 0x0F];
         macAddressString[i * 2 + 1] = hexChars[mac[i] & 0x0F];
@@ -23,8 +23,10 @@ String uintToString(uint8_t* mac){
 }
 
 uint8_t* exchangeWorkerCreds(){
-    uint8_t* managerMac;
-    uint8_t* workerMac;
+    uint8_t managerMac[6];
+    static uint8_t workerMac[6];
+
+    memset(workerMac, 0, sizeof(workerMac));
 
     esp_efuse_mac_get_default(managerMac);
 
