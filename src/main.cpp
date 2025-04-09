@@ -24,8 +24,10 @@ void setup(){
     Serial.begin(115200);
     #endif
 
+    Wire.begin();
+
     #ifdef DISPLAY_ON
-    display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
+    display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR, true, false);
     display.display();
     #endif
 
