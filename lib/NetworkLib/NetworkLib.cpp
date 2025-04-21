@@ -1,5 +1,8 @@
 #include "NetworkLib.h"
 
+#define PREFERENCES_NAMESPACE "wifi"
+#define CREDENTIALS_KEY "WIFI"
+
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 Preferences preferences;
@@ -15,10 +18,6 @@ bool connectToWiFi(WIFI_CREDENTIALS_T credentials);
 WIFI_CREDENTIALS_T listenForCredentials();
 
 bool initWiFi(){
-    // Start preferences with read/write access
-    preferences.begin("ssid", false);
-    preferences.begin("password", false);
-
     // Retrieve credentials from preferences
     WIFI_CREDENTIALS_T credentials = getWiFiCredentials();
 
@@ -68,8 +67,9 @@ bool initWiFi(){
 WIFI_CREDENTIALS_T getWiFiCredentials(){
     WIFI_CREDENTIALS_T credentials;
 
-    preferences.getBytes("ssid", credentials.ssid, 32);
-    preferences.getBytes("password", credentials.password, 32);
+    preferences.begin(PREFERENCES_NAMESPACE, true);
+    preferences.getBytes(CREDENTIALS_KEY, &credentials, sizeof(WIFI_CREDENTIALS_T));
+    preferences.end();
 
     return credentials;
 }
@@ -150,7 +150,7 @@ bool connectToWiFi(WIFI_CREDENTIALS_T credentials){
     if(WiFi.status() == WL_CONNECTED){
         #ifdef DEBUG
         Serial.println("Connected to WiFi");
-        Serial.println("Local IP: " + WiFi.localIP());
+        Serial.println("Local IP: " + WiFi.localIP().toString());
         Serial.println("MAC: " + WiFi.macAddress());
         #endif
 
@@ -170,13 +170,15 @@ bool connectToWiFi(WIFI_CREDENTIALS_T credentials){
 }
 
 void saveWiFiCredentials(WIFI_CREDENTIALS_T credentials){
-    preferences.putBytes("ssid", credentials.ssid, 32);
-    preferences.putBytes("password", credentials.password, 32);
+    preferences.begin(PREFERENCES_NAMESPACE, false);
+    preferences.putBytes(CREDENTIALS_KEY, &credentials, sizeof(WIFI_CREDENTIALS_T));
+    preferences.end();
 }
 
 void deleteWiFiCredentials(){
-    preferences.remove("ssid");
-    preferences.remove("password");
+    preferences.begin(PREFERENCES_NAMESPACE, false);
+    preferences.remove(CREDENTIALS_KEY);
+    preferences.end();
 }
 
 void reconnect(){
@@ -213,9 +215,11 @@ void reconnect(){
 
 void registerManager(){
     reconnect();
+    uint8_t mac[6];
+    WiFi.macAddress(mac);
 
     if(mqttClient.connected()){
-        mqttClient.publish("temptake/manager/register", (const uint8_t*)&managerMac, 12);
+        mqttClient.publish("temptake/manager/register", mac, 6);
     }
 }
 
