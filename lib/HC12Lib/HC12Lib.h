@@ -2,7 +2,6 @@
 #define HC12LIB_H
 
 #include <Arduino.h>
-#include <SoftwareSerial.h>
 
 #include "DataPackerLib.h"
 
@@ -32,7 +31,7 @@ class HC12{
         PACKET_T receiveData();
 
     private:
-        SoftwareSerial *serial;
+        HardwareSerial *serial;
         int setPin;
         bool sleep = false;
         bool commandMode = false;

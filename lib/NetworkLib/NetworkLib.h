@@ -38,4 +38,10 @@ void uploadData(uint8_t* data);
  */
 void registerWorker(String workerMac);
 
+/**
+ * Delete the stored WiFi credentials
+ * Should be called if the connection fails
+ */
+void deleteWiFiCredentials();
+
 #endif

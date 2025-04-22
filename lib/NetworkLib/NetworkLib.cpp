@@ -198,7 +198,7 @@ void reconnect(){
         }else{
             #ifdef DEBUG
             Serial.print("Failed to connect to MQTT server, rc=");
-            Serial.print(mqttClient.state());
+            Serial.println(mqttClient.state());
             Serial.println("Retrying in 3 seconds...");
             #endif
 

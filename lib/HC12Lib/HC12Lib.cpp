@@ -1,21 +1,23 @@
 #include "HC12Lib.h"
 
 HC12::HC12(uint8_t rx, uint8_t tx, uint8_t setPin){
-    serial = new SoftwareSerial(rx, tx);
+    serial = &Serial1;
     this->setPin = setPin;
     pinMode(setPin, OUTPUT);
-    serial->begin(1200);
+    serial->begin(1200, SERIAL_8N1, rx, tx);
 
-    this->setCommandMode(true);
-    this->sendCommand("AT+1200");
-    this->sendCommand("AT+P8");
-    this->sendCommand("AT+FU3");
-    this->setCommandMode(false);
+    // this->setCommandMode(true);
+    // this->sendCommand("AT+1200");
+    // this->sendCommand("AT+P8");
+    // this->sendCommand("AT+FU3");
+    // this->setCommandMode(false);
 }
 
 void HC12::setCommandMode(bool mode){
     commandMode = mode;
     digitalWrite(this->setPin, mode);
+    // this->serial->end();
+    // this->serial->begin(mode ? 1200 : 9600);
     delay(100);
 }
 
