@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "NetworkLib.h"
 #include "DataPackerLib.h"
@@ -9,7 +10,6 @@
 
 #ifdef DISPLAY_ON
 #include <Adafruit_SSD1306.h>
-#include <Wire.h>
 #endif
 
 #ifdef DISPLAY_ON
