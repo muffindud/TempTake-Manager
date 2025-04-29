@@ -6,6 +6,8 @@
 #include <PubSubClient.h>
 #include <BluetoothSerial.h>
 
+#include "DataPackerLib.h"
+
 #include "config.h"
 
 typedef struct {
@@ -29,7 +31,7 @@ bool initWiFi();
  *
  * @param data pointer to the buffer of data
  */
-void uploadData(uint8_t* data);
+void uploadData(PACKET_T data);
 
 /**
  * Register the worker with the manager

@@ -53,6 +53,9 @@ void loop(){
         if(packet.type == DAT_MODE){
             #if defined(DEBUG) || defined(DISPLAY_ON)
             String data_string = "";
+            data_string += "ID: " + String(packet.meta.packet_id) + "\n";
+            data_string += "M: " + String(packet.meta.manager_mac[0], HEX) + ":" + String(packet.meta.manager_mac[1], HEX) + ":" + String(packet.meta.manager_mac[2], HEX) + ":" + String(packet.meta.manager_mac[3], HEX) + ":" + String(packet.meta.manager_mac[4], HEX) + ":" + String(packet.meta.manager_mac[5], HEX) + "\n";
+            data_string += "W: " + String(packet.meta.worker_mac[0], HEX) + ":" + String(packet.meta.worker_mac[1], HEX) + ":" + String(packet.meta.worker_mac[2], HEX) + ":" + String(packet.meta.worker_mac[3], HEX) + ":" + String(packet.meta.worker_mac[4], HEX) + ":" + String(packet.meta.worker_mac[5], HEX) + "\n";
             data_string += "T: " + String(packet.data.temperature / 100. - 40.) + " C\n";
             data_string += "H: " + String(packet.data.humidity / 100.) + " %\n";
             data_string += "P: " + String(packet.data.pressure / 100.) + " mmHg\n";
@@ -72,7 +75,7 @@ void loop(){
             Serial.println(data_string);
             #endif
 
-            uploadData((uint8_t*)&packet);
+            uploadData(packet);
         }
     }
 }

@@ -218,8 +218,12 @@ void registerManager(){
     uint8_t mac[6];
     WiFi.macAddress(mac);
 
+    #ifdef DEBUG
+    Serial.println("Registering manager: " + String(mac[0], HEX) + ":" + String(mac[1], HEX) + ":" + String(mac[2], HEX) + ":" + String(mac[3], HEX) + ":" + String(mac[4], HEX) + ":" + String(mac[5], HEX));
+    #endif
+
     if(mqttClient.connected()){
-        mqttClient.publish("temptake/manager/register", mac, 6);
+        mqttClient.publish("temptake/manager/register", mac, sizeof(mac));
     }
 }
 
@@ -230,7 +234,13 @@ void registerWorker(String workerMac){
         workerMac.toUpperCase();
         String concatinatedMac = managerMac + workerMac;
 
-        mqttClient.publish("temptake/worker/register", (const uint8_t*)concatinatedMac.c_str(), 24);
+        // TODO: Send byte array instead of string
+
+        #ifdef DEBUG
+        Serial.println("Registering worker: " + concatinatedMac);
+        #endif
+
+        mqttClient.publish("temptake/worker/register", concatinatedMac.c_str(), 24);
 
         #ifdef DEBUG
         Serial.println("Registered worker: " + workerMac);
@@ -238,15 +248,14 @@ void registerWorker(String workerMac){
     }
 }
 
-void uploadData(uint8_t* data){
+void uploadData(PACKET_T data){
     reconnect();
 
     if(mqttClient.connected()){
-        mqttClient.publish("temptake/entry", data, sizeof(data));
+        mqttClient.publish("temptake/entry", reinterpret_cast<const uint8_t*>(&data), sizeof(data));
 
         #ifdef DEBUG
         Serial.println("Uploaded data");
-        Serial.print(String(data, HEX));
         #endif
     }
 }

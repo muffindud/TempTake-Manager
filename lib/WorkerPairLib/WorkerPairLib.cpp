@@ -30,6 +30,12 @@ uint8_t* exchangeWorkerCreds(){
 
     esp_efuse_mac_get_default(managerMac);
 
+    delay(100);
+
+    #ifdef DEBUG
+    Serial.println("Sending manager mac: " + uintToString(managerMac));
+    #endif
+
     Wire.beginTransmission(PAIR_ADDR);
     Wire.write(managerMac, 6);
     Wire.endTransmission();
