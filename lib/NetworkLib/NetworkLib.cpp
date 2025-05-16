@@ -156,7 +156,7 @@ bool connectToWiFi(WIFI_CREDENTIALS_T credentials){
 
         uint8_t mac[6];
         WiFi.macAddress(mac);
-        managerMac = String(mac[0], HEX) + String(mac[1], HEX) + String(mac[2], HEX) + String(mac[3], HEX) + String(mac[4], HEX) + String(mac[5], HEX);
+        managerMac = uintToString(mac);
         managerMac.toUpperCase();
 
         return true;
@@ -182,11 +182,8 @@ void deleteWiFiCredentials(){
 }
 
 void reconnect(){
-    for(
-        uint8_t attempts = 0;
-        attempts < 3 && !mqttClient.connected();
-        attempts++
-    ){
+    while (!mqttClient.connected())
+    {
         #ifdef DEBUG
         Serial.println("Attempting MQTT connection...");
         #endif
@@ -227,23 +224,33 @@ void registerManager(){
     }
 }
 
-void registerWorker(String workerMac){
+void registerWorker(uint8_t *workerMac){
     reconnect();
 
     if(mqttClient.connected()){
-        workerMac.toUpperCase();
-        String concatinatedMac = managerMac + workerMac;
-
-        // TODO: Send byte array instead of string
-
         #ifdef DEBUG
-        Serial.println("Registering worker: " + concatinatedMac);
+        String workerMacString = uintToString(workerMac);
+        workerMacString.toUpperCase();
+        Serial.println("Registering worker: " + workerMacString);
         #endif
 
-        mqttClient.publish("temptake/worker/register", concatinatedMac.c_str(), 24);
+        // First half is manager mac, second half is worker mac in hex
+        uint8_t concatinatedMac[12];
+        uint8_t *mac;
+        WiFi.macAddress(mac);
+
+        for(int i = 0; i < 6; i++){
+            concatinatedMac[i] = mac[i];
+        }
+
+        for(int i = 0; i < 6; i++){
+            concatinatedMac[i + 6] = workerMac[i];
+        }
+
+        mqttClient.publish("temptake/worker/register", concatinatedMac, 12);
 
         #ifdef DEBUG
-        Serial.println("Registered worker: " + workerMac);
+        Serial.println("Registered worker: " + workerMacString);
         #endif
     }
 }

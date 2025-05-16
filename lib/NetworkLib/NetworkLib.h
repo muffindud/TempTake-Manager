@@ -7,6 +7,7 @@
 #include <BluetoothSerial.h>
 
 #include "DataPackerLib.h"
+#include "WorkerPairLib.h"
 
 #include "config.h"
 
@@ -38,7 +39,7 @@ void uploadData(PACKET_T data);
  *
  * @param workerMac the MAC address of the worker
  */
-void registerWorker(String workerMac);
+void registerWorker(uint8_t *workerMac);
 
 /**
  * Delete the stored WiFi credentials

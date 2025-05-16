@@ -40,7 +40,7 @@ void loop(){
     if(isPairingMode()){
         if(!pairingStateHolder){
             uint8_t* workerMac = exchangeWorkerCreds();
-            registerWorker(uintToString(workerMac));
+            registerWorker(workerMac);
 
             // Set state on to avoid repeated execution
             pairingStateHolder = true;
