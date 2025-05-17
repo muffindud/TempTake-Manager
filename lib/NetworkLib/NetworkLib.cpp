@@ -236,7 +236,7 @@ void registerWorker(uint8_t *workerMac){
 
         // First half is manager mac, second half is worker mac in hex
         uint8_t concatinatedMac[12];
-        uint8_t *mac;
+        uint8_t mac[6];
         WiFi.macAddress(mac);
 
         for(int i = 0; i < 6; i++){
