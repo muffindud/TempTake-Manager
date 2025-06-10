@@ -13,6 +13,7 @@ WIFI_CREDENTIALS_T getWiFiCredentials();
 void registerManager();
 void reconnect();
 void deleteWiFiCredentials();
+bool keyExists(const char* key);
 void saveWiFiCredentials(WIFI_CREDENTIALS_T credentials);
 bool connectToWiFi(WIFI_CREDENTIALS_T credentials);
 WIFI_CREDENTIALS_T listenForCredentials();
@@ -30,7 +31,7 @@ bool initWiFi(){
     #endif
 
     // If no credentials are found, listen for them via Bluetooth
-    if(strlen(credentials.ssid) == 0){
+    if(strlen(credentials.ssid) == 0 || !keyExists(CREDENTIALS_KEY)){
         #ifdef DEBUG
         Serial.println("No credentials found");
         Serial.println("Listening for credentials");
@@ -72,6 +73,13 @@ WIFI_CREDENTIALS_T getWiFiCredentials(){
     preferences.end();
 
     return credentials;
+}
+
+bool keyExists(const char* key){
+    preferences.begin(PREFERENCES_NAMESPACE, true);
+    bool exists = preferences.isKey(key);
+    preferences.end();
+    return exists;
 }
 
 WIFI_CREDENTIALS_T listenForCredentials(){
@@ -177,7 +185,7 @@ void saveWiFiCredentials(WIFI_CREDENTIALS_T credentials){
 
 void deleteWiFiCredentials(){
     preferences.begin(PREFERENCES_NAMESPACE, false);
-    preferences.remove(CREDENTIALS_KEY);
+    preferences.clear();
     preferences.end();
 }
 
