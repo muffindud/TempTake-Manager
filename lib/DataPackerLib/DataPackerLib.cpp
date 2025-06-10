@@ -76,3 +76,24 @@ uint16_t getCRC16(DATA_T data_p){
 
     return crc;
 }
+
+bool checkData(PACKET_T packet)
+{
+    uint16_t crc = getCRC16(packet.data);
+    if (crc != packet.meta.crc16) {
+        #ifdef DEBUG
+        Serial.println("CRC mismatch: expected " + String(packet.meta.crc16, HEX) + ", got " + String(crc, HEX));
+        #endif
+        return false;
+    }
+
+    uint32_t id = getId(packet.meta.worker_mac, packet.meta.manager_mac, packet.data, packet.meta.crc16);
+    if (id != packet.meta.packet_id) {
+        #ifdef DEBUG
+        Serial.println("ID mismatch: expected " + String(packet.meta.packet_id, HEX) + ", got " + String(id, HEX));
+        #endif
+        return false;
+    }
+
+    return true;
+}

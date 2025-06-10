@@ -6,6 +6,10 @@
 
 #include "config.h"
 
+#ifdef DEBUG
+#include <Arduino.h>
+#endif
+
 #define DAT_MODE 0xDD
 #define ACK_MODE 0xAA
 
@@ -91,5 +95,14 @@ PACKET_T buildPacket(
  */
 PACKET_T castPacket(uint8_t* buffer);
 #endif
+
+/**
+ * Checks if the data in a packet is valid
+ *
+ * @param packet The packet to check
+ * @returns True if the data is valid, false otherwise
+ */
+bool checkData(PACKET_T packet);
+
 
 #endif

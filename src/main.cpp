@@ -75,7 +75,9 @@ void loop(){
             Serial.println(data_string);
             #endif
 
-            uploadData(packet);
+            if (checkData(packet)) {
+                uploadData(packet);
+            }
         }
     }
 }
